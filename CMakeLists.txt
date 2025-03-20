@@ -4,8 +4,9 @@ project(DA2025_PRJ1_T01G03)
 
 add_executable(
         Main
-        CLI/Main.cpp
-        CLI/Menu.cpp
+        Main.cpp
+        Menu.cpp
+        BatchMode.cpp
 )
 
 
