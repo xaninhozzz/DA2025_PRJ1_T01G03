@@ -7,9 +7,12 @@
 #include <fstream>
 #include <sstream>
 
-BatchMode::BatchMode(){
-  std::cout << "BatchMode initiated..." << std::endl;
-}
+BatchMode::BatchMode(){}
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 void BatchMode::processBatchFile(const std::string& inputFile, const std::string& outputFile) {
     std::ifstream input(inputFile);
@@ -27,13 +30,11 @@ void BatchMode::processBatchFile(const std::string& inputFile, const std::string
 
     std::string line;
     while (std::getline(input, line)) {
-        // Parse each line and process it
         std::istringstream iss(line);
         std::string key, value;
 
         while (std::getline(iss, key, ':') && std::getline(iss, value)) {
-            // Process the key-value pairs here
-            output << "Key: " << key << ", Value: " << value << "\n";
+            output << key <<": " << value << "\n";
         }
     }
 

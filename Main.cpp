@@ -2,7 +2,7 @@
 
 int main() {
     Menu menu;
-    menu.displayMenu();
+    menu.modeChoice();
     //menu.getUserModeSourceDestination();
     return 0;
 }
