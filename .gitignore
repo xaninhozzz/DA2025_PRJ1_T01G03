@@ -1,1 +1,5 @@
-.idea
+.idea/
+my_program
+input.txt
+output.txt
+.DS_Store
