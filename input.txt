@@ -1,0 +1,10 @@
+
+Mode: Driving
+Source: de
+Destination: de
+Mode: Driving
+Source: 2
+Destination: 3
+Mode: Walking
+Source: sa
+Destination: sa

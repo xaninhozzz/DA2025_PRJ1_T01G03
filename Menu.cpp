@@ -18,6 +18,13 @@ void Menu::modeChoice() {
     std::cout << "Enter your choice: ";
     std::cin >> choice;
 
+    if (std::cin.fail()) {
+        std::cin.clear();  // Clear error flag
+        std::cin.ignore(1000, '\n');  // Ignore incorrect input
+        std::cout << "Invalid choice. Please enter a number (1-3)." << std::endl;
+        modeChoice();
+    }
+
     switch (choice) {
         case 1:
             input << "Mode: Driving" << std::endl;
