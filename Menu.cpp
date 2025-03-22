@@ -13,7 +13,7 @@ void Menu::modeChoice() {
     std::cout << "Welcome to our GPS! Please choose your mode:" << std::endl;
     std::cout << "1. Driving" << std::endl;
     std::cout << "2. Walking" << std::endl;
-    std::cout << "3. Go back" << std::endl;
+    std::cout << "3. Both" << std::endl;
 
     std::cout << "Enter your choice: ";
     std::cin >> choice;
@@ -31,6 +31,9 @@ void Menu::modeChoice() {
         break;
         case 2:
             input << "Mode: Walking" << std::endl;
+        break;
+        case 3:
+            input << "Mode: Environmentally-Friendly" << std::endl;
         break;
         default:
             std::cout << "Invalid choice, please try again." << std::endl;
