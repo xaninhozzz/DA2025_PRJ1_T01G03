@@ -1,21 +1,20 @@
-//
-// Created by anacastanheiros on 3/24/25.
-//
-
 #ifndef DATA_H
 #define DATA_H
 
-#include "Locations.h"
+#include <string>
 #include "Graph.h"
-#include <unordered_map>
 
 class Data {
-  private:
-    unordered_map<int, Locations> locations;
+public:
+    explicit Data(Graph<std::string>& graph);
 
+    // Loaders for the CSV files
+    bool loadLocations(const std::string& filename);
+    bool loadDistances(const std::string& filename);
 
-}
+private:
+    Graph<std::string>& graph;
 
+};
 
-
-#endif //DATA_H
+#endif // DATA_H
