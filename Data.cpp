@@ -25,8 +25,11 @@ bool Data::loadLocations(const std::string& filename) {
         std::getline(ss, code, ',');
         std::getline(ss, parkingstr, ',');
 
+        parkingstr.erase(parkingstr.find_last_not_of(" \r") + 1); //It searches from the end of the string to find the last character that is not a space or carriage return (\r).
+
         bool parking = (parkingstr == "1");
-        graph.addVertex(code, parking);  
+
+        graph.addVertex(code, parking);
     }
 
     file.close();
