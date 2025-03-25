@@ -67,6 +67,10 @@ protected:
 
     int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
 
+    // Needed to allow priority queue access to queueIndex field
+    template <class U>
+    friend class MutablePriorityQueue;
+
     void deleteEdge(Edge<T> *edge);
 };
 
