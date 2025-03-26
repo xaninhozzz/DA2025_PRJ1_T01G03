@@ -64,6 +64,21 @@
         "xloctime": "cpp",
         "xmemory": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "__bit_reference": "cpp",
+        "__hash_table": "cpp",
+        "__node_handle": "cpp",
+        "__split_buffer": "cpp",
+        "__verbose_abort": "cpp",
+        "array": "cpp",
+        "complex": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "execution": "cpp",
+        "iomanip": "cpp",
+        "print": "cpp",
+        "stack": "cpp",
+        "string_view": "cpp",
+        "variant": "cpp"
     }
 }

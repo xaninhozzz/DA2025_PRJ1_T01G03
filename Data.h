@@ -15,8 +15,9 @@ class Data {
         Data();
         void loadLocations(const string& filename);
         void loadDistances(const string& filename);
+        Graph<Location> get_graph();
     private:
-        Graph<Location>& graph;
+        Graph<Location> graph;
         unordered_map<int, Location> locations;
 };
 

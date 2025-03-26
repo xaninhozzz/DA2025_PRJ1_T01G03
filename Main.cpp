@@ -18,20 +18,9 @@
 #include "Data.h"
 
 int main() {
-    Graph<std::string> graph;
-    Data data(graph);
-
-    if (!data.loadLocations("Data/Locations.csv")) {
-        std::cerr << "Failed to load locations.\n";
-        return 1;
-    }
-
-    if (!data.loadDistances("Data/Distances.csv")) {
-        std::cerr << "Failed to load distances.\n";
-        return 1;
-    }
-
-    std::cout << "Vertices loaded: " << graph.getNumVertex() << std::endl;
+    cout << "Hello" << endl;
+    Data data = Data();
+    auto graph = data.get_graph();
     for (auto v : graph.getVertexSet()) {
         std::cout << "Location Code: " << v->getInfo() << std::endl;
         std::cout << "Has Parking: " << (v->getParking() ? "Yes" : "No") << std::endl;

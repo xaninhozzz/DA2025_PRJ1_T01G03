@@ -26,7 +26,7 @@ void Data::loadLocations(const std::string& filename) {
         parkingstr.erase(parkingstr.find_last_not_of(" \r") + 1); //It searches from the end of the string to find the last character that is not a space or carriage return (\r).
 
         bool parking = (parkingstr == "1");
-        Location loc = Location(location, code, std::stoi(id), parking);
+        const Location &loc = Location(location, code, std::stoi(id), parking);
         graph.addVertex(loc, parking);
     }
 
@@ -52,17 +52,12 @@ void Data::loadDistances(const std::string& filename) {
         std::getline(ss, drivingStr, ',');
         std::getline(ss, walkingStr, ',');
 
-
-        int driving = std::stoi(drivingStr);
-        int walking = std::stoi(walkingStr);
-        Location loc1Obj = Location(loc1, "", 0, false);
-        Location loc2Obj = Location(loc2, "", 0, false);
-        graph.addBidirectionalEdge(loc1Obj, loc2Obj, driving, walking);
+        //graph.addBidirectionalEdge(loc1Obj, loc2Obj, driving, walking);
     }
 
     file.close();
 }
 
-
-
-
+Graph<Location> Data::get_graph(){
+    return this->graph;
+}
