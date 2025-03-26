@@ -8,6 +8,7 @@ void Data::loadLocations(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open " << filename << "\n";
+        return;
     }
 
     std::string line;
@@ -36,6 +37,7 @@ void Data::loadDistances(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open " << filename << "\n";
+        return;
     }
 
     std::string line;
@@ -50,12 +52,12 @@ void Data::loadDistances(const std::string& filename) {
         std::getline(ss, drivingStr, ',');
         std::getline(ss, walkingStr, ',');
 
-        if (drivingStr == "X") continue; // skip non-drivable edges
 
         int driving = std::stoi(drivingStr);
         int walking = std::stoi(walkingStr);
-
-        graph.addEdge(loc1, loc2, driving, walking);
+        Location loc1Obj = Location(loc1, "", 0, false);
+        Location loc2Obj = Location(loc2, "", 0, false);
+        graph.addBidirectionalEdge(loc1Obj, loc2Obj, driving, walking);
     }
 
     file.close();

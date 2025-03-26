@@ -13,8 +13,6 @@ using namespace std;
 class Data {
     public:
         Data();
-
-        // Loaders for the CSV files
         void loadLocations(const string& filename);
         void loadDistances(const string& filename);
     private:
