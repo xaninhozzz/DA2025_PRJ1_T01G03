@@ -8,7 +8,6 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
-#include "Locations.h"
 
 template <class T>
 class Edge;
@@ -82,7 +81,7 @@ public:
     Edge(Vertex<T> *orig, Vertex<T> *dest, int driving, int walking);
 
     Vertex<T> * getDest() const;
-    double getWeight() const;
+    double getWeight(const std::string& mode) const;
     int getDriving() const;
     int getWalking() const;
     bool isSelected() const;
@@ -347,6 +346,18 @@ int Edge<T>::getDriving() const {
 template <class T>
 int Edge<T>::getWalking() const {
     return this->walking;
+}
+
+// Method to get the weight based on the mode (driving or walking)
+template <class T>
+double Edge<T>::getWeight(const std::string& mode) const {
+    if (mode == "driving") {
+        return this->driving;  // Return driving time for the edge
+    } else if (mode == "walking") {
+        return this->walking;  // Return walking time for the edge
+    } else {
+        throw std::invalid_argument("Invalid mode: must be 'driving' or 'walking'.");
+    }
 }
 
 

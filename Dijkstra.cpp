@@ -1,62 +1,80 @@
-//
-// Created by anacastanheiros on 3/25/25.
-//
-
-
 #include "Dijkstra.h"
 #include "MutablePriorityQueue.h"
 #include "Graph.h"
 #include <unordered_map>
 #include <limits>
 #include <algorithm>
+#include <set>
+#include <functional>
 
-std::vector<int> dijkstra(Graph<int>* g, int source, int target,
-                          std::function<int(Edge<int>*)> getWeight) {
+template <class T>
+void dijkstra(Graph<T>* g, const T& origin, const T& destination, const std::string& mode,
+              const std::set<T>& avoidNodes, const std::set<std::pair<T, T>>& avoidEdges) {
 
-    const int inf = std::numeric_limits<int>::max();
+    const int inf = std::numeric_limits<int>::max(); // Define the infinity value
+    std::unordered_map<T, int> dist;  // Stores the shortest distance from the origin
+    std::unordered_map<T, T> prev;  // Stores the previous node for path reconstruction
 
-    std::unordered_map<int, int> dist;
-    std::unordered_map<int, int> prev;
-
+    // Initialize distances
     for (auto v : g->getVertexSet()) {
-        dist[v->getInfo()] = inf;
-        prev[v->getInfo()] = -1;
-        v->setDist(INF);
+        dist[v] = inf;
+        prev[v] = T();  // Initialize previous node as a default value
     }
+    dist[origin] = 0;  // Set the distance for the origin to 0
 
-    Vertex<int>* src = g->findVertex(source);
-    if (!src) return {};
-    src->setDist(0);
-
-    MutablePriorityQueue<Vertex<int>> pq;
-    pq.insert(src);
+    // Priority queue for Dijkstra (min-heap)
+    MutablePriorityQueue<T> pq;
+    pq.insert(&origin);  // Insert the origin node with priority 0
 
     while (!pq.empty()) {
-        auto u = pq.extractMin();
+        T current = pq.extractMin();  // Get the node with the smallest distance
 
-        for (auto e : u->getAdj()) {
-            int w = getWeight(e);
-            if (w == -1) continue; // skip inaccessible edges
+        // Skip nodes that have already been visited or are in the avoid list
+        if (avoidNodes.find(current) != avoidNodes.end()) {
+            continue;
+        }
 
-            Vertex<int>* v = e->getDest();
-            int alt = u->getDist() + w;
+        // If we reach the destination, stop early
+        if (current == destination) {
+            break;
+        }
 
-            if (alt < v->getDist()) {
-                v->setDist(alt);
-                prev[v->getInfo()] = u->getInfo();
-
-                pq.insert(v);
+        // Explore the adjacent vertices (edges)
+        for (Edge<T>* edge : g->getEdges(current)) {
+            // Skip edges that have already been visited or are in the avoid list
+            if (avoidEdges.find({current, edge->getDest()}) != avoidEdges.end()) {
+                continue;
             }
+
+            // Get the weight based on the current mode (driving or walking)
+            double weight = edge->getWeight(mode);  // Use the getWeight method
+
+            // Relaxation step: update the distance if a shorter path is found
+            if (dist[current] + weight < dist[edge->getDest()]) {
+                dist[edge->getDest()] = dist[current] + weight;
+                prev[edge->getDest()] = current;
+                pq.decreaseKey(edge->getDest());  // Update priority in the queue
+            }
+        }
+
+        // Switch to walking mode when reaching a parking location
+        if (g->getVertex(current)->getParking() && mode == "driving") {
+            mode = "walking";  // Change mode to walking after parking
         }
     }
 
-    std::vector<int> path;
-    Vertex<int>* end = g->findVertex(target);
-    if (!end || end->getDist() == inf) return path; // no path found
+    // If we need to do something with the results (like reconstruct the path)
+    if (dist[destination] != inf) {
+        T current = destination;
+        std::vector<T> path;
+        while (current != origin) {
+            path.push_back(current);
+            current = prev[current];
+        }
+        path.push_back(origin);
+        std::reverse(path.begin(), path.end());
 
-    for (int at = target; at != -1; at = prev[at]) {
-        path.push_back(at);
+        // Here, you can return the path or process it as needed
+        // For example: return path;
     }
-    std::reverse(path.begin(), path.end());
-    return path;
 }
