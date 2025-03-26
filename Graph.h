@@ -81,9 +81,7 @@ public:
     Edge(Vertex<T> *orig, Vertex<T> *dest, int driving, int walking);
 
     Vertex<T> * getDest() const;
-    double getWeight() const;
-    int getDriving() const;
-    int getWalking() const;
+    int getWeight(bool isDriving=true) const;
     bool isSelected() const;
     Vertex<T> * getOrig() const;
     Edge<T> *getReverse() const;
@@ -98,7 +96,7 @@ protected:
     int walking; // walking time
     // auxiliary fields
     bool selected = false;
-
+    bool onlyWalking = driving == -1;
     // used for bidirectional edges
     Vertex<T> *orig;
     Edge<T> *reverse = nullptr;
@@ -339,14 +337,13 @@ Vertex<T> * Edge<T>::getDest() const {
 }
 
 template <class T>
-int Edge<T>::getDriving() const {
-    return this->driving;
+int Edge<T>::getWeight(bool isDriving) const {
+    if (isDriving && !this->onlyWalking) {
+        return driving;
+    }
+    return walking;
 }
 
-template <class T>
-int Edge<T>::getWalking() const {
-    return this->walking;
-}
 
 
 template <class T>
@@ -462,8 +459,6 @@ bool Graph<T>::addEdge(const T& sourc, const T& dest, int driving, int walking) 
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
-
-    Edge<T>* e = new Edge<T>(v1, v2, driving, walking);
     v1->addEdge(v2, driving, walking);
     return true;
 }

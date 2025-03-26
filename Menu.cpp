@@ -4,7 +4,12 @@
 #include <string>
 #include <fstream>
 
-Menu::Menu() {}
+#include "Data.h"
+
+Menu::Menu() {
+    Data data = Data();
+    modeChoice();
+}
 
 void Menu::modeChoice() {
     int choice;
@@ -14,6 +19,7 @@ void Menu::modeChoice() {
     std::cout << "1. Driving" << std::endl;
     std::cout << "2. Walking" << std::endl;
     std::cout << "3. Both" << std::endl;
+    std::cout << "0. Exit" << std::endl;
 
     std::cout << "Enter your choice: ";
     std::cin >> choice;
@@ -35,6 +41,9 @@ void Menu::modeChoice() {
         case 3:
             input << "Mode: Environmentally-Friendly" << std::endl;
         break;
+        case 0:
+            cout << "Exiting..." << std::endl;
+            return;
         default:
             std::cout << "Invalid choice, please try again." << std::endl;
         modeChoice();

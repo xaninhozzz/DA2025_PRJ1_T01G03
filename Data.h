@@ -3,6 +3,7 @@
 
 
 #define LOCATIONS "../Data/Locations.csv"
+#define DISTANCES "../Data/Distances.csv"
 #include "Graph.h"
 #include <string>
 #include <unordered_map>
@@ -20,7 +21,8 @@ class Data {
         Graph<Location> get_graph();
     private:
         Graph<Location> graph;
-        unordered_map<int, Location> locations;
+        unordered_map<int, Vertex<Location>*> locations_by_id;
+        unordered_map<string, Vertex<Location>*> location_by_code;
 };
 
 #endif // DATA_H

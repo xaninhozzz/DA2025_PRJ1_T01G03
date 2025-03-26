@@ -26,14 +26,16 @@ int Location::getId() const {
 }
 
 bool Location::operator==(const Location &other) const {
-    return other.id == this->id;
+    if (other.id == this->id) return true;
+    if (other.code == this->code) return true;
+    return false;
 }
 
 // ✅ Fixed std::endl usage
 std::ostream& operator<<(std::ostream& os, const Location& l) {
-    os << "Location: " << l.name << " with id --" << l.id 
+    os << "Location: " << l.name << " with id --" << l.id
        << " -- with code --" << l.code 
        << "-- and " << (l.parking ? "can park" : "can't park") 
-       << std::endl;
+       << '\n';
     return os;
 }

@@ -12,30 +12,31 @@
 //     data.loadDistances("Distances.csv");
 //     //menu.getUserModeSourceDestination();
 //     return 0;
+            /*
+            *for (auto d = 0; d < 10 ; d++) {
+            auto v = graph.getVertexSet()[d];
+            std::cout << "Location Code: " << v->getInfo() << std::endl;
+            std::cout << "Has Parking: " << (v->getParking() ? "Yes" : "No") << std::endl;
+            std::cout << "Connections:\n";
+            for (auto e : v->getAdj()) {
+            std::cout << "  → " << e->getDest()->getInfo()
+            << " [Drive: " << e->getWeight()
+            << "]" << std::endl;
+            std::cout << "  → " << e->getDest()->getInfo()
+            << " [Walk: " << e->getWeight(false)
+            << "]" << std::endl;
+            }
+            std::cout << "------------------------\n";
+            }
+            */
 // }
 
 #include "Graph.h"
 #include "Data.h"
+#include "Menu.h"
 
 int main() {
-    cout << "Hello" << endl;
-    Data data = Data();
-    auto graph = data.get_graph();
-    for (auto v : graph.getVertexSet()) {
-        std::cout << "Location Code: " << v->getInfo() << std::endl;
-        std::cout << "Has Parking: " << (v->getParking() ? "Yes" : "No") << std::endl;
-        std::cout << "Connections:\n";
-        for (auto e : v->getAdj()) {
-            std::cout << "  → " << e->getDest()->getInfo()
-                      << " [Drive: " << e->getDriving()
-                      << "]" << std::endl;
-            std::cout << "  → " << e->getDest()->getInfo()
-                      << " [Walk: " << e->getWalking()
-                      << "]" << std::endl;
-        }
-        std::cout << "------------------------\n";
-    }
-
+    Menu menu = Menu();
     return 0;
 }
 
