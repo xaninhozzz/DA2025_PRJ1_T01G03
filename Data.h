@@ -1,20 +1,25 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <string>
 #include "Graph.h"
+#include <string>
+#include <unordered_map>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include "Location.h"
+using namespace std;
 
 class Data {
-public:
-    explicit Data(Graph<std::string>& graph);
+    public:
+        Data();
 
-    // Loaders for the CSV files
-    bool loadLocations(const std::string& filename);
-    bool loadDistances(const std::string& filename);
-
-private:
-    Graph<std::string>& graph;
-
+        // Loaders for the CSV files
+        void loadLocations(const string& filename);
+        void loadDistances(const string& filename);
+    private:
+        Graph<Location>& graph;
+        unordered_map<int, Location> locations;
 };
 
 #endif // DATA_H

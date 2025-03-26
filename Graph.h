@@ -8,7 +8,6 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
-#include "Locations.h"
 
 template <class T>
 class Edge;

@@ -16,7 +16,6 @@
 
 #include "Graph.h"
 #include "Data.h"
-#include "Locations.h"
 
 int main() {
     Graph<std::string> graph;
