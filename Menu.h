@@ -13,7 +13,13 @@ class Menu {
     Data data;
     void IndependentRoutePlanning();
     pair<int,int> getSource_Destination();
+
+    void getAvoidData(std::vector<int>& avoidNodes,
+                            std::vector<std::pair<int, int>>& avoidSegments,
+                            int& includeNode);
+
     void execDriveMode();
+    void execRestrictedMode();
     RoutePlanner routePlanner;
 };
 

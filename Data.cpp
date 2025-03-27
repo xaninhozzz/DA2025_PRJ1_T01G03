@@ -1,7 +1,6 @@
 #include "Data.h"
 
 
-
 Data::Data() : graph(Graph<Location>()) {
     loadLocations(LOCATIONS);
     loadDistances(DISTANCES);

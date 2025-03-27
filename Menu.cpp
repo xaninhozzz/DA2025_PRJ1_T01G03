@@ -108,6 +108,7 @@ void Menu::drivingModeFunctions() {
 
         break;
         case 2:
+            execRestrictedMode();
             break;
         case 0:
             break;
@@ -138,6 +139,21 @@ void Menu::execDriveMode() {
     cout << endl;
 }
 
+void Menu::execRestrictedMode() {
+    auto source_dest = getSource_Destination();
+
+    std::vector<int> avoidNodes;
+    std::vector<std::pair<int, int>> avoidEdges;
+    int includeNode;
+
+    getAvoidData(avoidNodes, avoidEdges, includeNode);
+
+    auto res = routePlanner.execRestrictedRoutePlanning(data, source_dest.first, source_dest.second, avoidNodes, avoidEdges, includeNode);
+
+
+
+}
+
 pair<int,int> Menu::getSource_Destination() {
     int sourceId,destId;
 
@@ -166,3 +182,56 @@ pair<int,int> Menu::getSource_Destination() {
     }
     return {sourceId,destId};
 }
+
+void Menu::getAvoidData(std::vector<int>& avoidNodes,
+                        std::vector<std::pair<int, int>>& avoidEdges,
+                        int& includeNode) {
+
+    std::string line;
+
+    // Read AvoidNodes
+    std::cout << "Enter AvoidNodes:<id>,<id>,... (or type 'none' to skip):\n";
+    std::getline(std::cin, line);
+    if (line != "none" && line.find("AvoidNodes:") == 0) {
+        std::string ids = line.substr(11); // skip "AvoidNodes:"
+        std::stringstream ss(ids);
+        std::string token;
+        while (std::getline(ss, token, ',')) {
+            avoidNodes.push_back(std::stoi(token));
+        }
+    }
+
+    // Read AvoidEdges
+    std::cout << "Enter AvoidEdges:(id,id),(id,id),... (or type 'none' to skip):\n";
+    std::getline(std::cin, line);
+    if (line != "none" && line.find("AvoidEdges:") == 0) {
+        std::string segmentPart = line.substr(12); // skip "AvoidEdges:"
+        std::stringstream ss(segmentPart);
+        std::string segment;
+        while (std::getline(ss, segment, ')')) {
+            size_t open = segment.find('(');
+            if (open != std::string::npos) {
+                std::string pairStr = segment.substr(open + 1);  // skip '('
+                size_t comma = pairStr.find(',');
+                if (comma != std::string::npos) {
+                    int a = std::stoi(pairStr.substr(0, comma));
+                    int b = std::stoi(pairStr.substr(comma + 1));
+                    avoidEdges.emplace_back(a, b);
+                }
+            }
+            // Remove the comma at the start of the next segment (if any)
+            if (ss.peek() == ',') ss.ignore();
+        }
+    }
+
+    // Read IncludeNode
+    std::cout << "Enter IncludeNode:<id> (or type 'none' to skip):\n";
+    std::getline(std::cin, line);
+    if (line != "none" && line.find("IncludeNode:") == 0) {
+        includeNode = std::stoi(line.substr(12));  // skip "IncludeNode:"
+    } else {
+        includeNode = -1;  // No specific node to include (if "none" is entered)
+    }
+}
+
+
