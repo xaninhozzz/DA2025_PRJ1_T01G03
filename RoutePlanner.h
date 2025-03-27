@@ -13,10 +13,14 @@
 #include <limits>
 #include <algorithm>
 
+#include "Data.h"
+
+using namespace std;
 class RoutePlanner {
     public:
         RoutePlanner();
-        std::vector<int> dijkstra(Graph<Location>* g, int source, int target, std::unordered_map<int,Vertex<Location> *> locations,bool isDriving);
+        std::vector<int> dijkstra(Graph<Location> g, int source, int target, std::unordered_map<int,Vertex<Location> *> locations,bool isDriving);
+        pair<vector<int>,vector<int>> execIndependentRoutePlanning(Data data,int source, int target);
 };
 
 

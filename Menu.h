@@ -11,6 +11,9 @@ class Menu {
     void modeChoice();
     void drivingModeFunctions();
     Data data;
+    void IndependentRoutePlanning();
+    pair<int,int> getSource_Destination();
+    void execDriveMode();
     RoutePlanner routePlanner;
 };
 

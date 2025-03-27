@@ -6,18 +6,17 @@
 #include "RoutePlanner.h"
 
 RoutePlanner::RoutePlanner() {
-
 }
 
 // Dikstra function
-std::vector<int> RoutePlanner::dijkstra(Graph<Location>* g, int sourceId, int targetId,std::unordered_map<int,Vertex<Location> *> locations, bool isDriving) {
+std::vector<int> RoutePlanner::dijkstra(Graph<Location> g, int sourceId, int targetId,std::unordered_map<int,Vertex<Location> *> locations, bool isDriving=true) {
 
     const int inf = std::numeric_limits<int>::max();
 
     std::unordered_map<int, int> dist;
     std::unordered_map<int, int> prev;
 
-    for (auto v : g->getVertexSet()) {
+    for (auto v : g.getVertexSet()) {
         dist[v->getInfo().getId()] = inf;
         prev[v->getInfo().getId()] = -1;
         v->setDist(INF);
@@ -40,7 +39,7 @@ std::vector<int> RoutePlanner::dijkstra(Graph<Location>* g, int sourceId, int ta
             Vertex<Location>* v = e->getDest();
             int alt = u->getDist() + w;
 
-            if (alt < v->getDist()) {
+            if (alt < v->getDist() && !v->isVisited()) {
                 v->setDist(alt);
                 prev[v->getInfo().getId()] = u->getInfo().getId();
 
@@ -60,3 +59,24 @@ std::vector<int> RoutePlanner::dijkstra(Graph<Location>* g, int sourceId, int ta
     std::reverse(path.begin(), path.end());
     return path;
 }
+
+pair<vector<int>,vector<int>> RoutePlanner::execIndependentRoutePlanning(Data data, int source, int target) {
+    Graph<Location> g = data.get_graph();
+
+    for (auto v : g.getVertexSet()) {
+        v->setVisited(false);
+    }
+    auto bestPath = dijkstra(g,source,target,data.get_locations_by_id());
+
+    for (int i = 1; i < bestPath.size() - 1; i++) {
+        auto vertex = data.get_locations_by_id()[bestPath[i]];
+        if (vertex != nullptr) {
+            vertex->setVisited(true);
+        }
+    }
+
+    auto secondBestPath = dijkstra(g,source,target,data.get_locations_by_id());
+
+    return  {bestPath,secondBestPath};
+}
+

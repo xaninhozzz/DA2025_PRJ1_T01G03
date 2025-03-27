@@ -2,7 +2,7 @@
 
 
 
-Data::Data() : graph(new Graph<Location>()) {
+Data::Data() : graph(Graph<Location>()) {
     loadLocations(LOCATIONS);
     loadDistances(DISTANCES);
 }
@@ -30,8 +30,8 @@ void Data::loadLocations(const std::string& filename) {
 
         bool parking = (parkingstr == "1");
         const Location &loc = Location(location, code, std::stoi(id), parking);
-        graph->addVertex(loc, parking);
-        Vertex<Location> * newLoc = graph->findVertex(loc);
+        graph.addVertex(loc, parking);
+        Vertex<Location> * newLoc = graph.findVertex(loc);
         locations_by_id[loc.getId()] = newLoc;
         location_by_code[loc.getCode()] = newLoc;
     }
@@ -64,11 +64,11 @@ void Data::loadDistances(const std::string& filename) {
         if (drivingStr == "X") {
             drivingStr = "-1";
         }
-        if (!graph->addEdge(loc1->getInfo(), loc2->getInfo(), stoi(drivingStr), stoi(walkingStr))){
+        if (!graph.addEdge(loc1->getInfo(), loc2->getInfo(), stoi(drivingStr), stoi(walkingStr))){
             std::cerr << "Failed to add edge\n";
             return;
         }
-        if (!graph->addEdge(loc2->getInfo(), loc1->getInfo(), stoi(drivingStr), stoi(walkingStr))) {
+        if (!graph.addEdge(loc2->getInfo(), loc1->getInfo(), stoi(drivingStr), stoi(walkingStr))) {
             std::cerr << "Failed to add edge\n";
             return;
         }
@@ -79,7 +79,7 @@ void Data::loadDistances(const std::string& filename) {
     file.close();
 }
 
-Graph<Location>* Data::get_graph(){
+Graph<Location> Data::get_graph(){
     return graph;
 }
 
