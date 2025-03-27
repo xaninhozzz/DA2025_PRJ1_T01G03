@@ -8,8 +8,8 @@
 RoutePlanner::RoutePlanner() {
 }
 
-// Dikstra function
-std::vector<int> RoutePlanner::dijkstra(Graph<Location> g, int sourceId, int targetId,std::unordered_map<int,Vertex<Location> *> locations, bool isDriving=true) {
+// Dijkstra function
+std::vector<int> RoutePlanner::dijkstra(Graph<Location> g, int sourceId, int targetId, std::unordered_map<int, Vertex<Location> *> locations, bool isDriving=true) {
 
     const int inf = std::numeric_limits<int>::max();
 
@@ -80,3 +80,55 @@ pair<vector<int>,vector<int>> RoutePlanner::execIndependentRoutePlanning(Data da
     return  {bestPath,secondBestPath};
 }
 
+vector<int> RoutePlanner::execRestrictedRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int includeNode) {
+    Graph<Location> g = data.get_graph();
+
+    // Reset all visited flags
+    for (auto v : g.getVertexSet()) {
+        v->setVisited(false);
+    }
+
+    // Apply avoidNodes (if any)
+    for (int avoidNode : avoidNodes) {
+        auto v = data.get_locations_by_id()[avoidNode];
+        if (v) v->setVisited(true);
+    }
+
+    // Apply avoidEdges (if any)
+    for (auto avoidEdge : avoidEdges) {
+        auto src = data.get_locations_by_id()[avoidEdge.first];
+        auto dest = data.get_locations_by_id()[avoidEdge.second];
+        auto srcVertex = g.findVertex(src->getInfo());
+        auto destVertex = g.findVertex(dest->getInfo());
+
+        if (srcVertex && destVertex) {
+            for (auto e : srcVertex->getAdj()) {
+                if (e->getDest() == destVertex) {
+                    e->setSelected(true);
+                }
+            }
+        }
+    }
+
+    // --- If includeNode is not used (-1), run regular Dijkstra ---
+    if (includeNode == -1 || includeNode == source || includeNode == target) {
+        return dijkstra(g, source, target, data.get_locations_by_id());
+    }
+
+    // --- Otherwise, run in two parts ---
+    auto path1 = dijkstra(g, source, includeNode, data.get_locations_by_id());
+    if (path1.empty()) return {};
+
+    for (auto v : g.getVertexSet()) {
+        if (!v->isVisited()) v->setVisited(false);
+    }
+
+    auto path2 = dijkstra(g, includeNode, target, data.get_locations_by_id());
+    if (path2.empty()) return {};
+
+    path1.pop_back();
+    path1.insert(path1.end(), path2.begin(), path2.end());
+
+    return path1;
+
+}

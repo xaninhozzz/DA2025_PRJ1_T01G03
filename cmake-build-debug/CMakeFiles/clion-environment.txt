@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ToolSet: 1.0 (local)Ninja: 1.12.1@/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja
+=======
+ToolSet: 1.0 (local)Ninja: 1.12.1@/snap/clion/332/bin/ninja/linux/x64/ninja
+>>>>>>> f3910fb8968e7120d9daf47e6fdd0807569701c9
 Options: 
 
 Options:

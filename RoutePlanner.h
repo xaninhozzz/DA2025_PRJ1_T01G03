@@ -20,7 +20,13 @@ class RoutePlanner {
     public:
         RoutePlanner();
         std::vector<int> dijkstra(Graph<Location> g, int source, int target, std::unordered_map<int,Vertex<Location> *> locations,bool isDriving);
+<<<<<<< HEAD
         pair<vector<int>,vector<int> > execIndependentRoutePlanning(Data data,int source, int target);
+=======
+        pair<vector<int>,vector<int>> execIndependentRoutePlanning(Data data,int source, int target);
+        vector<int> execRestrictedRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int includeNode);
+
+>>>>>>> f3910fb8968e7120d9daf47e6fdd0807569701c9
 };
 
 
