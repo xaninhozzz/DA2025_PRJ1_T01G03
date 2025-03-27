@@ -1,16 +1,16 @@
 #include "Data.h"
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
 
-Data::Data(Graph<std::string>& graph) : graph(graph) {}
+Data::Data() : graph(Graph<Location>()) {
+    loadLocations(LOCATIONS);
+    loadDistances(DISTANCES);
+}
 
-bool Data::loadLocations(const std::string& filename) {
+void Data::loadLocations(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open " << filename << "\n";
-        return false;
+        return;
     }
 
     std::string line;
@@ -28,19 +28,21 @@ bool Data::loadLocations(const std::string& filename) {
         parkingstr.erase(parkingstr.find_last_not_of(" \r") + 1); //It searches from the end of the string to find the last character that is not a space or carriage return (\r).
 
         bool parking = (parkingstr == "1");
-
-        graph.addVertex(code, parking);
+        const Location &loc = Location(location, code, std::stoi(id), parking);
+        graph.addVertex(loc, parking);
+        Vertex<Location> * newLoc = graph.findVertex(loc);
+        locations_by_id[loc.getId()] = newLoc;
+        location_by_code[loc.getCode()] = newLoc;
     }
 
     file.close();
-    return true;
 }
 
-bool Data::loadDistances(const std::string& filename) {
+void Data::loadDistances(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open " << filename << "\n";
-        return false;
+        return;
     }
 
     std::string line;
@@ -48,25 +50,38 @@ bool Data::loadDistances(const std::string& filename) {
 
     while (std::getline(file, line)) {
         std::stringstream ss(line);
-        std::string loc1, loc2, drivingStr, walkingStr;
+        std::string code1, code2, drivingStr, walkingStr;
 
-        std::getline(ss, loc1, ',');
-        std::getline(ss, loc2, ',');
+        std::getline(ss, code1, ',');
+        std::getline(ss, code2, ',');
         std::getline(ss, drivingStr, ',');
         std::getline(ss, walkingStr, ',');
 
-        if (drivingStr == "X") continue; // skip non-drivable edges
+        auto loc1 = location_by_code[code1];
+        auto loc2 = location_by_code[code2];
 
-        int driving = std::stoi(drivingStr);
-        int walking = std::stoi(walkingStr);
+        if (drivingStr == "X") {
+            drivingStr = "-1";
+        }
+        if (!graph.addEdge(loc1->getInfo(), loc2->getInfo(), stoi(drivingStr), stoi(walkingStr))){
+            std::cerr << "Failed to add edge\n";
+            return;
+        }
+        if (!graph.addEdge(loc2->getInfo(), loc1->getInfo(), stoi(drivingStr), stoi(walkingStr))) {
+            std::cerr << "Failed to add edge\n";
+            return;
+        }
 
-        graph.addEdge(loc1, loc2, driving, walking);
+
     }
 
     file.close();
-    return true;
 }
 
+Graph<Location> Data::get_graph(){
+    return graph;
+}
 
-
-
+unordered_map<int, Vertex<Location>*> Data::get_locations_by_id() {
+    return locations_by_id;
+}
