@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iostream>
 #include "Location.h"
+#include "RoutePlanner.h"
 using namespace std;
 
 class Data {
@@ -18,9 +19,10 @@ class Data {
         Data();
         void loadLocations(const string& filename);
         void loadDistances(const string& filename);
-        Graph<Location> get_graph();
+        Graph<Location>* get_graph();
+        unordered_map<int, Vertex<Location>*> get_locations_by_id();
     private:
-        Graph<Location> graph;
+        Graph<Location> *graph;
         unordered_map<int, Vertex<Location>*> locations_by_id;
         unordered_map<string, Vertex<Location>*> location_by_code;
 };

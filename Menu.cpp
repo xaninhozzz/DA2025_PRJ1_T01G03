@@ -7,19 +7,54 @@
 #include "Data.h"
 
 Menu::Menu() {
-    Data data = Data();
-    modeChoice();
+    data = Data();
+    routePlanner = RoutePlanner();
+}
+
+int Menu::selectTypeOfMenu() {
+    int choice;
+
+    std::cout << "Welcome to our GPS! Please choose your mode:" << std::endl;
+    std::cout << "1. Terminal" << std::endl;
+    std::cout << "2. Input file" << std::endl;
+    std::cout << "0. Exit" << std::endl;
+
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    if (std::cin.fail()) {
+        std::cin.clear();  // Clear error flag
+        std::cin.ignore(1000, '\n');  // Ignore incorrect input
+        std::cout << "Invalid choice. Please enter a number (1-3)." << std::endl;
+    }
+    return choice;
+}
+
+int Menu::run() {
+    int option = selectTypeOfMenu();
+
+    while(option != 0){
+        switch(option){
+            case 1:
+                modeChoice();
+            break;
+            case 2:
+                //inputTxtFile();
+            break;
+            default:
+                std::cout << "Invalid option try again" << std::endl;
+        }
+        option = selectTypeOfMenu();
+    }
+    return 0;
 }
 
 void Menu::modeChoice() {
     int choice;
-    std::ofstream input("input.txt", std::ios::app);
 
-    std::cout << "Welcome to our GPS! Please choose your mode:" << std::endl;
     std::cout << "1. Driving" << std::endl;
-    std::cout << "2. Walking" << std::endl;
-    std::cout << "3. Both" << std::endl;
-    std::cout << "0. Exit" << std::endl;
+    std::cout << "2. Both" << std::endl;
+    std::cout << "0. Back" << std::endl;
 
     std::cout << "Enter your choice: ";
     std::cin >> choice;
@@ -33,79 +68,52 @@ void Menu::modeChoice() {
 
     switch (choice) {
         case 1:
-            input << "Mode: Driving" << std::endl;
+            cout << "Mode: Driving" << std::endl;
+            drivingModeFunctions();
         break;
         case 2:
-            input << "Mode: Walking" << std::endl;
-        break;
-        case 3:
-            input << "Mode: Environmentally-Friendly" << std::endl;
+            cout << "Mode: Environmentally-Friendly" << std::endl;
         break;
         case 0:
-            cout << "Exiting..." << std::endl;
-            return;
+            cout << "Going Back ..." << std::endl;
+            break;
         default:
             std::cout << "Invalid choice, please try again." << std::endl;
         modeChoice();
-        return;
     }
-
-    std::string source, destination;
-
-    std::cout << "What is your location, right now?" << std::endl;
-    std::cout << "Enter your location: ";
-    std::cin >> source;
-    std::cout << "And what is your destination?" << std::endl;
-    std::cout << "Enter your destination: ";
-    std::cin >> destination;
-
-    input << "Source: " << source << std::endl;
-    input << "Destination: " << destination << std::endl;
-
-    input.close();
-
-    BatchMode batch;
-    batch.processBatchFile("input.txt", "output.txt");
-
-    std::cout << "Please check file output.txt. It should've been created and must have the choices selected." << std::endl;
 }
 
-void Menu::getBestRouteInput() {
-  std::cout << "bestroute" << std::endl;
-  /*
-    std::ifstream inputFile("input.txt");
-    if (!inputFile.is_open()) {
-        std::cerr << "Error: Could not open input.txt" << std::endl;
-        return;
+void Menu::drivingModeFunctions() {
+    int choice;
+
+    std::cout << "1. Independent Route Planning" << std::endl;
+    std::cout << "2. Restricted Route Planning" << std::endl;
+    std::cout << "0. Go Back" << std::endl;
+
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    if (std::cin.fail()) {
+        std::cin.clear();  // Clear error flag
+        std::cin.ignore(1000, '\n');  // Ignore incorrect input
+        std::cout << "Invalid choice. Please enter a number (1-3)." << std::endl;
+        modeChoice();
     }
+    auto vec = routePlanner.dijkstra(data.get_graph(),1,6,data.get_locations_by_id(),true);
 
-    std::string line, mode, source, destination;
-
-    try {
-        // Read Mode
-        std::getline(inputFile, line);
-        mode = line.substr(line.find(":") + 1);
-
-        // Read Source
-        std::getline(inputFile, line);
-        source = line.substr(line.find(":") + 1);
-
-        // Read Destination
-        std::getline(inputFile, line);
-        destination = line.substr(line.find(":") + 1);
-
-        inputFile.close();
-
-        // Display the extracted data
-        std::cout << "Mode: " << mode << std::endl;
-        std::cout << "Source: " << source << std::endl;
-        std::cout << "Destination: " << destination << std::endl;
-
-    } catch (const std::exception &e) {
-        std::cerr << "Error parsing input file: " << e.what() << std::endl;
-        inputFile.close();
+    switch (choice) {
+        case 1:
+            for (int i = 0; i < vec.size(); i++) {
+                std::cout << vec[i] << std::endl;
+            }
+        break;
+        case 2:
+            break;
+        case 0:
+            break;;
+        default:
+            std::cout << "Invalid choice, please try again." << std::endl;
+        drivingModeFunctions();
     }
-
-   */
 }
 

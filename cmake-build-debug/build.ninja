@@ -67,12 +67,6 @@ build CMakeFiles/teste.dir/Data.cpp.obj: CXX_COMPILER__teste_unscanned_Debug C$:
   OBJECT_DIR = CMakeFiles\teste.dir
   OBJECT_FILE_DIR = CMakeFiles\teste.dir
 
-build CMakeFiles/teste.dir/Dijkstra.cpp.obj: CXX_COMPILER__teste_unscanned_Debug C$:/Users/pmigu/Downloads/teste/Dijkstra.cpp || cmake_object_order_depends_target_teste
-  DEP_FILE = CMakeFiles\teste.dir\Dijkstra.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\teste.dir
-  OBJECT_FILE_DIR = CMakeFiles\teste.dir
-
 build CMakeFiles/teste.dir/Menu.cpp.obj: CXX_COMPILER__teste_unscanned_Debug C$:/Users/pmigu/Downloads/teste/Menu.cpp || cmake_object_order_depends_target_teste
   DEP_FILE = CMakeFiles\teste.dir\Menu.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
@@ -99,7 +93,7 @@ build CMakeFiles/teste.dir/Location.cpp.obj: CXX_COMPILER__teste_unscanned_Debug
 #############################################
 # Link the executable teste.exe
 
-build teste.exe: CXX_EXECUTABLE_LINKER__teste_Debug CMakeFiles/teste.dir/main.cpp.obj CMakeFiles/teste.dir/BatchMode.cpp.obj CMakeFiles/teste.dir/Data.cpp.obj CMakeFiles/teste.dir/Dijkstra.cpp.obj CMakeFiles/teste.dir/Menu.cpp.obj CMakeFiles/teste.dir/RoutePlanner.cpp.obj CMakeFiles/teste.dir/Location.cpp.obj
+build teste.exe: CXX_EXECUTABLE_LINKER__teste_Debug CMakeFiles/teste.dir/main.cpp.obj CMakeFiles/teste.dir/BatchMode.cpp.obj CMakeFiles/teste.dir/Data.cpp.obj CMakeFiles/teste.dir/Menu.cpp.obj CMakeFiles/teste.dir/RoutePlanner.cpp.obj CMakeFiles/teste.dir/Location.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\teste.dir
