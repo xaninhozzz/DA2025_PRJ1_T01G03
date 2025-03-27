@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.30"
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "teste::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-teste-Debug-c2cab2928a21bd380880.json",
+					"jsonFile" : "target-teste-Debug-e2023db18dd96ec63063.json",
 					"name" : "teste",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/pmigu/Downloads/teste/cmake-build-debug",
-		"source" : "C:/Users/pmigu/Downloads/teste"
+		"build" : "/Users/miguelsousa/FEUP/2A-2S/DesenhoAlgo/DA2025_PRJ1_T01G03/cmake-build-debug",
+		"source" : "/Users/miguelsousa/FEUP/2A-2S/DesenhoAlgo/DA2025_PRJ1_T01G03"
 	},
 	"version" : 
 	{

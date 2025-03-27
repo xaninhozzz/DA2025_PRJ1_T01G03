@@ -4,13 +4,25 @@
 
 #ifndef BATCHMODE_H
 #define BATCHMODE_H
-
 #include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 
 class BatchMode {
-public:
-  BatchMode();
-  void processBatchFile(const std::string& inputFile, const std::string& outputFile);
+  public:
+    BatchMode();
+    void processBatchFile(const std::string& inputFile, const std::string& outputFile);
+    std::string Mode;
+    int Source;
+    int Destination;
+    int MaxWalkTime;
+    int IncludeNode;
+    std::vector<int> AvoidNodes;
+    std::vector<std::pair<int,int>> AvoidSegments;
+    int IncludeNode;
 };
 
 

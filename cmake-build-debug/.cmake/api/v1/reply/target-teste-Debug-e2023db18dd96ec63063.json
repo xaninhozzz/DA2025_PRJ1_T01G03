@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "teste.exe"
-		},
-		{
-			"path" : "teste.pdb"
+			"path" : "teste"
 		}
 	],
 	"backtrace" : 1,
@@ -38,7 +35,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -std=gnu++20 -fdiagnostics-color=always"
+					"fragment" : "-g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics"
 				}
 			],
 			"language" : "CXX",
@@ -73,16 +70,12 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
-				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
 	"name" : "teste",
-	"nameOnDisk" : "teste.exe",
+	"nameOnDisk" : "teste",
 	"paths" : 
 	{
 		"build" : ".",
