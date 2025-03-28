@@ -33,17 +33,19 @@ std::vector<int> RoutePlanner::dijkstra(Graph<Location> g, int sourceId, int tar
         auto u = pq.extractMin();
 
         for (auto e : u->getAdj()) {
-            int w = e->getWeight(isDriving);
-            if (w == -1) continue; // skip inaccessible edges
+            if (!e->isSelected()) {
+                int w = e->getWeight(isDriving);
+                if (w == -1) continue; // skip inaccessible edges
 
-            Vertex<Location>* v = e->getDest();
-            int alt = u->getDist() + w;
+                Vertex<Location>* v = e->getDest();
+                int alt = u->getDist() + w;
 
-            if (alt < v->getDist() && !v->isVisited()) {
-                v->setDist(alt);
-                prev[v->getInfo().getId()] = u->getInfo().getId();
+                if (alt < v->getDist() && !v->isVisited()) {
+                    v->setDist(alt);
+                    prev[v->getInfo().getId()] = u->getInfo().getId();
 
-                pq.insert(v);
+                    pq.insert(v);
+                }
             }
         }
     }
@@ -119,15 +121,13 @@ vector<int> RoutePlanner::execRestrictedRoutePlanning(Data data, int source, int
     auto path1 = dijkstra(g, source, includeNode, data.get_locations_by_id());
     if (path1.empty()) return {};
 
-    for (auto v : g.getVertexSet()) {
-        if (!v->isVisited()) v->setVisited(false);
-    }
 
     auto path2 = dijkstra(g, includeNode, target, data.get_locations_by_id());
     if (path2.empty()) return {};
 
     path1.pop_back();
     path1.insert(path1.end(), path2.begin(), path2.end());
+
 
     return path1;
 

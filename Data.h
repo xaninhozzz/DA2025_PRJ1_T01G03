@@ -2,8 +2,12 @@
 #define DATA_H
 
 
-#define LOCATIONS "../Data/Locations.csv"
-#define DISTANCES "../Data/Distances.csv"
+//#define LOCATIONS "../Data/Locations.csv"
+//#define DISTANCES "../Data/Distances.csv"
+
+#define LOCATIONS "../Data/LocSample.csv"
+#define DISTANCES "../Data/DisSample.csv"
+
 #include "Graph.h"
 #include <string>
 #include <unordered_map>

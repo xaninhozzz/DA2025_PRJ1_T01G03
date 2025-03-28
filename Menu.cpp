@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <limits>
 
 #include "Data.h"
 
@@ -21,6 +22,7 @@ int Menu::selectTypeOfMenu() {
 
     std::cout << "Enter your choice: ";
     std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (std::cin.fail()) {
         std::cin.clear();  // Clear error flag
@@ -58,6 +60,7 @@ void Menu::modeChoice() {
 
     std::cout << "Enter your choice: ";
     std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (std::cin.fail()) {
         std::cin.clear();  // Clear error flag
@@ -92,6 +95,7 @@ void Menu::drivingModeFunctions() {
 
     std::cout << "Enter your choice: ";
     std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (std::cin.fail()) {
         std::cin.clear();  // Clear error flag
@@ -121,6 +125,33 @@ void Menu::drivingModeFunctions() {
 void Menu::execDriveMode() {
     auto source_dest = getSource_Destination();
     auto pair = routePlanner.execIndependentRoutePlanning(data, source_dest.first,source_dest.second);
+
+    int total = 0;
+    for (int i = 0; i < pair.first.size() - 1; i++) {
+        int v1 = pair.first[i];
+        int v2 = pair.first[i + 1];
+        for (auto edge : data.get_locations_by_id()[v1]->getAdj()) {
+            if (edge->getDest()->getInfo().getId() == v2) {
+                total += edge->getWeight();
+                //cout << total << endl;
+                break;
+            }
+        }
+    }
+
+    total = 0;
+    for (int i = 0; i < pair.second.size() - 1; i++) {
+        int v1 = pair.second[i];
+        int v2 = pair.second[i + 1];
+        for (auto edge : data.get_locations_by_id()[v1]->getAdj()) {
+            if (edge->getDest()->getInfo().getId() == v2) {
+                total += edge->getWeight();
+                //cout << total << endl;
+                break;
+            }
+        }
+    }
+
     if (pair.first.empty()) {
         cout << "No valid path" << endl;
         return;
@@ -148,8 +179,33 @@ void Menu::execRestrictedMode() {
 
     getAvoidData(avoidNodes, avoidEdges, includeNode);
 
-    auto res = routePlanner.execRestrictedRoutePlanning(data, source_dest.first, source_dest.second, avoidNodes, avoidEdges, includeNode);
+    auto result = routePlanner.execRestrictedRoutePlanning(data, source_dest.first, source_dest.second, avoidNodes, avoidEdges, includeNode);
 
+    int total = 0;
+    for (int i = 0; i < result.size() - 1; i++) {
+        int v1 = result[i];
+        int v2 = result[i + 1];
+        for (auto edge : data.get_locations_by_id()[v1]->getAdj()) {
+            if (edge->getDest()->getInfo().getId() == v2) {
+                total += edge->getWeight();
+                //cout << total << endl;
+                break;
+            }
+        }
+    }
+
+    if (!result.empty()) {
+        std::cout << "RestrictedDrivingRoute:";
+        for (size_t i = 0; i < result.size(); ++i) {
+            std::cout << result[i];
+            if (i != result.size() - 1) {
+                std::cout << ",";  // Add commas between IDs
+            }
+        }
+        std::cout << "(" << total << ")\n";
+    } else {
+        std::cout << "No restricted route found.\n";
+    }
 
 
 }
@@ -161,6 +217,7 @@ pair<int,int> Menu::getSource_Destination() {
 
     std::cout << "Enter your choice: ";
     std::cin >> sourceId;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (std::cin.fail()) {
         std::cin.clear();  // Clear error flag
@@ -173,6 +230,7 @@ pair<int,int> Menu::getSource_Destination() {
 
     std::cout << "Enter your choice: ";
     std::cin >> destId;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (std::cin.fail()) {
         std::cin.clear();  // Clear error flag
@@ -183,30 +241,40 @@ pair<int,int> Menu::getSource_Destination() {
     return {sourceId,destId};
 }
 
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <utility>
+
 void Menu::getAvoidData(std::vector<int>& avoidNodes,
                         std::vector<std::pair<int, int>>& avoidEdges,
                         int& includeNode) {
+    avoidNodes.clear();
+    avoidEdges.clear();
+    includeNode = -1;
 
     std::string line;
 
     // Read AvoidNodes
-    std::cout << "Enter AvoidNodes:<id>,<id>,... (or type 'none' to skip):\n";
-    std::getline(std::cin, line);
-    if (line != "none" && line.find("AvoidNodes:") == 0) {
-        std::string ids = line.substr(11); // skip "AvoidNodes:"
-        std::stringstream ss(ids);
+    std::cout << "Enter AvoidNodes:<id>,<id>,... (or type 'none' to skip): ";
+    std::getline(std::cin, line);  // Read input
+    if (line != "none" && !line.empty()) {
+        std::stringstream ss(line);
         std::string token;
         while (std::getline(ss, token, ',')) {
-            avoidNodes.push_back(std::stoi(token));
+            if (!token.empty())
+                avoidNodes.push_back(std::stoi(token));
         }
+    } else {
+        std::cout << "No nodes to avoid.\n";
     }
 
     // Read AvoidEdges
-    std::cout << "Enter AvoidEdges:(id,id),(id,id),... (or type 'none' to skip):\n";
-    std::getline(std::cin, line);
-    if (line != "none" && line.find("AvoidEdges:") == 0) {
-        std::string segmentPart = line.substr(12); // skip "AvoidEdges:"
-        std::stringstream ss(segmentPart);
+    std::cout << "Enter AvoidEdges:(id,id),(id,id),... (or type 'none' to skip): ";
+    std::getline(std::cin, line);  // Read input
+    if (line != "none" && !line.empty()) {
+        std::stringstream ss(line);
         std::string segment;
         while (std::getline(ss, segment, ')')) {
             size_t open = segment.find('(');
@@ -222,16 +290,23 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
             // Remove the comma at the start of the next segment (if any)
             if (ss.peek() == ',') ss.ignore();
         }
+    } else {
+        std::cout << "No edges to avoid.\n";
     }
 
     // Read IncludeNode
-    std::cout << "Enter IncludeNode:<id> (or type 'none' to skip):\n";
-    std::getline(std::cin, line);
-    if (line != "none" && line.find("IncludeNode:") == 0) {
-        includeNode = std::stoi(line.substr(12));  // skip "IncludeNode:"
+    std::cout << "Enter IncludeNode:<id> (or type 'none' to skip): ";
+    std::getline(std::cin, line);  // Read input
+    if (line != "none" && !line.empty()) {
+        includeNode = std::stoi(line);  // Get the specific node to include
     } else {
-        includeNode = -1;  // No specific node to include (if "none" is entered)
+        includeNode = -1;  // No specific node to include
+        std::cout << "No specific include node.\n";
     }
 }
+
+
+
+
 
 
