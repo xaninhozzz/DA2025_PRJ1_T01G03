@@ -132,20 +132,22 @@ void Menu::execDriveMode() {
         int v2 = pair.first[i + 1];
         for (auto edge : data.get_locations_by_id()[v1]->getAdj()) {
             if (edge->getDest()->getInfo().getId() == v2) {
-                total += edge->getWeight();
+                auto e = edge->getWeight();
+                total += e;
+                //cout << e << endl;
                 //cout << total << endl;
                 break;
             }
         }
     }
 
-    total = 0;
+    int total_t = 0;
     for (int i = 0; i < pair.second.size() - 1; i++) {
         int v1 = pair.second[i];
         int v2 = pair.second[i + 1];
         for (auto edge : data.get_locations_by_id()[v1]->getAdj()) {
             if (edge->getDest()->getInfo().getId() == v2) {
-                total += edge->getWeight();
+                total_t += edge->getWeight();
                 //cout << total << endl;
                 break;
             }
@@ -157,7 +159,13 @@ void Menu::execDriveMode() {
         return;
     }
     for (int i = 0; i < pair.first.size(); i++) {
-        cout << pair.first[i] << " ";
+        cout << pair.first[i];
+        if (i != pair.first.size() - 1) {
+            cout << ",";
+        }
+        else {
+            std::cout << "(" << total << ")\n";
+        }
     }
     cout << endl;
     if (pair.second.size() == 0) {
@@ -165,9 +173,18 @@ void Menu::execDriveMode() {
         return;
     }
     for (int i = 0; i < pair.second.size(); i++) {
-        cout << pair.second[i] << " ";
+        cout << pair.second[i];
+        if (i != pair.second.size() - 1) {
+            cout << ",";
+        }
+        else {
+            std::cout << "(" << total_t << ")\n";
+        }
     }
+
     cout << endl;
+
+    data.resetGraph();
 }
 
 void Menu::execRestrictedMode() {
@@ -207,7 +224,7 @@ void Menu::execRestrictedMode() {
         std::cout << "No restricted route found.\n";
     }
 
-
+    data.resetGraph();
 }
 
 pair<int,int> Menu::getSource_Destination() {

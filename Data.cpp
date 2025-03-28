@@ -63,11 +63,11 @@ void Data::loadDistances(const std::string& filename) {
         if (drivingStr == "X") {
             drivingStr = "-1";
         }
-        if (!graph.addEdge(loc1->getInfo(), loc2->getInfo(), stoi(drivingStr), stoi(walkingStr))){
+        if (!graph.addBidirectionalEdge(loc1->getInfo(), loc2->getInfo(), stoi(drivingStr), stoi(walkingStr))){
             std::cerr << "Failed to add edge\n";
             return;
         }
-        if (!graph.addEdge(loc2->getInfo(), loc1->getInfo(), stoi(drivingStr), stoi(walkingStr))) {
+        if (!graph.addBidirectionalEdge(loc2->getInfo(), loc1->getInfo(), stoi(drivingStr), stoi(walkingStr))) {
             std::cerr << "Failed to add edge\n";
             return;
         }
@@ -84,4 +84,13 @@ Graph<Location> Data::get_graph(){
 
 unordered_map<int, Vertex<Location>*> Data::get_locations_by_id() {
     return locations_by_id;
+}
+
+void Data::resetGraph() {
+    for (auto& [id, vertex] : locations_by_id) {
+        vertex->setDist(INF);
+        vertex->setPath(nullptr);
+        vertex->setVisited(false);
+        // Add setProcessing(false); if you use it
+    }
 }

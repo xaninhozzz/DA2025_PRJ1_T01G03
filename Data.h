@@ -25,6 +25,7 @@ class Data {
         void loadDistances(const string& filename);
         Graph<Location> get_graph();
         unordered_map<int, Vertex<Location>*> get_locations_by_id();
+        void resetGraph();
     private:
         Graph<Location> graph;
         unordered_map<int, Vertex<Location>*> locations_by_id;

@@ -35,6 +35,7 @@ std::vector<int> RoutePlanner::dijkstra(Graph<Location> g, int sourceId, int tar
         for (auto e : u->getAdj()) {
             if (!e->isSelected()) {
                 int w = e->getWeight(isDriving);
+                //cout << w << endl;
                 if (w == -1) continue; // skip inaccessible edges
 
                 Vertex<Location>* v = e->getDest();

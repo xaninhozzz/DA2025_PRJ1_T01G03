@@ -94,7 +94,7 @@ protected:
     int walking; // walking time
     // auxiliary fields
     bool selected = false;
-    bool onlyWalking = driving == -1;
+    //bool onlyWalking = driving == -1;
     // used for bidirectional edges
     Vertex<T> *orig;
     Edge<T> *reverse = nullptr;
@@ -336,7 +336,7 @@ Vertex<T> * Edge<T>::getDest() const {
 
 template <class T>
 int Edge<T>::getWeight(bool isDriving) const {
-    if (isDriving && !this->onlyWalking) {
+    if (isDriving) {           //&& !this->onlyWalking
         return driving;
     }
     return walking;
@@ -483,15 +483,8 @@ bool Graph<T>::addBidirectionalEdge(const T& sourc, const T& dest, int driving, 
     if (v1 == nullptr || v2 == nullptr)
         return false;
 
-    // Create two directed edges (v1 -> v2 and v2 -> v1) with driving/walking weights
-    Edge<T>* e1 = new Edge<T>(v1, v2, driving, walking);
-    Edge<T>* e2 = new Edge<T>(v2, v1, driving, walking);
-
-    e1->setReverse(e2);
-    e2->setReverse(e1);
-
-    v1->adj.push_back(e1);
-    v2->adj.push_back(e2);
+    v1->addEdge(v2, driving, walking);
+    v2->addEdge(v1, driving, walking);
 
     return true;
 }
