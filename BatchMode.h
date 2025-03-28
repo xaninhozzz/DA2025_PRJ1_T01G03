@@ -19,7 +19,6 @@ class BatchMode {
     int Source;
     int Destination;
     int MaxWalkTime;
-    int IncludeNode;
     std::vector<int> AvoidNodes;
     std::vector<std::pair<int,int>> AvoidSegments;
     int IncludeNode;
