@@ -137,29 +137,72 @@ vector<int> RoutePlanner::execRestrictedRoutePlanning(Data data, int source, int
 
 }
 
-unordered_map<int, Vertex<Location>*> RoutePlanner::findFirstParking(Data data, Graph<Location> g, int vertexID, unordered_map<int, Vertex<Location>*> parkingNodesMap) {
-    // Vector to store reachable parking nodes from the source (vertexID)
+//Salvo aqui caso dê molho
+
+// unordered_map<int, Vertex<Location>*> RoutePlanner::findFirstParking(Data data, Graph<Location> g, int vertexID, unordered_map<int, Vertex<Location>*> parkingNodesMap, bool isDriving) {
+//     // Vector to store reachable parking nodes from the source (vertexID)
+//     unordered_map<int, Vertex<Location>*> reachableParkingNodes;
+//
+//     // Step 1: Run Dijkstra to find the first reachable parking nodes from the source
+//     auto parkingFromSource = dijkstra(g, vertexID, -1, data.get_locations_by_id(), isDriving);
+//
+//     for (auto &node : parkingNodesMap) {
+//         // Check if the parking node is in the shortest path
+//         if (find(parkingFromSource.begin(), parkingFromSource.end(), node.first) != parkingFromSource.end()) {
+//             reachableParkingNodes[node.first] = node.second;  // Insert into map (node.first = parking node id, node.second = vertex)
+//         }
+//     }
+//     // Step 2: Now that we have the reachable parking nodes, return the first one(s)
+//     return reachableParkingNodes;
+// }
+
+unordered_map<int, Vertex<Location>*> RoutePlanner::findFirstParking(Data data, Graph<Location> g, int vertexID, unordered_map<int, Vertex<Location>*> parkingNodesMap, bool isDriving, int maxWalkTime) {
+    // Map to store reachable parking nodes from the source (vertexID)
     unordered_map<int, Vertex<Location>*> reachableParkingNodes;
 
     // Step 1: Run Dijkstra to find the first reachable parking nodes from the source
-    auto parkingFromSource = dijkstra(g, vertexID, -1, data.get_locations_by_id(), true);
+    auto parkingFromSource = dijkstra(g, vertexID, -1, data.get_locations_by_id(), isDriving);  // Pass isDriving to decide walking or driving
 
     for (auto &node : parkingNodesMap) {
         // Check if the parking node is in the shortest path
         if (find(parkingFromSource.begin(), parkingFromSource.end(), node.first) != parkingFromSource.end()) {
-            reachableParkingNodes[node.first] = node.second;  // Insert into map (node.first = parking node id, node.second = vertex)
+            // If the mode is walking, check the walk time on the edges leading to the parking node
+            if (!isDriving) {
+                int totalWalkTime = 0;
+                Vertex<Location>* currentVertex = data.get_locations_by_id()[vertexID];
+
+                // Traverse the path to calculate the total walk time to this parking node
+                while (currentVertex != node.second) {
+                    for (auto edge : currentVertex->getAdj()) {
+                        if (edge->getDest() == node.second) {
+                            totalWalkTime += edge->getWeight(false);  // Use the weight for walking time (false means walking)
+                            break;
+                        }
+                    }
+                    currentVertex = currentVertex->getAdj()[0]->getDest();  // Move to the next vertex in the path
+                }
+
+                // Add the parking node if the total walking time is within the limit
+                if (totalWalkTime <= maxWalkTime) {
+                    reachableParkingNodes[node.first] = node.second;  // Insert into map (node.first = parking node id, node.second = vertex)
+                }
+            } else {
+                // If the mode is driving, add the node without checking walk time
+                reachableParkingNodes[node.first] = node.second;
+            }
         }
     }
 
-    // Step 2: Now that we have the reachable parking nodes, return the first one(s)
+    // Return the reachable parking nodes
     return reachableParkingNodes;
 }
 
 
-pair<vector<int>, int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int maxWalkTime) {
+vector<int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int maxWalkTime) {
+    // era pair<vector<int>, int>
     Graph<Location> g = data.get_graph();
-    pair<vector<int>, int> p;
-   //criar dois sets um dos parkings possiveis atraves do source e outro dos destinations 
+    // pair<vector<int>, int> p;
+    vector<int> v;
 
     // Reset all visited flags
     for (auto v : g.getVertexSet()) {
@@ -174,8 +217,8 @@ pair<vector<int>, int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Da
         }
     }
 
-    unordered_map<int, Vertex<Location>*> sourceParkingNodes = findFirstParking(data, g, source, parkingNodesMap);
-    unordered_map<int, Vertex<Location>*> targetParkingNodes = findFirstParking(data, g, target, parkingNodesMap);
+    unordered_map<int, Vertex<Location>*> targetParkingNodes = findFirstParking(data, g, target, parkingNodesMap, false, maxWalkTime);
+    unordered_map<int, Vertex<Location>*> sourceParkingNodes = findFirstParking(data, g, source, parkingNodesMap, true, maxWalkTime);
 
     // Step 3: Find the intersection of parking nodes from the source and target
     unordered_map<int, Vertex<Location>*> commonParkingNodes;
@@ -187,7 +230,7 @@ pair<vector<int>, int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Da
     }
     
     for (auto &node : commonParkingNodes){
-        execRestrictedRoutePlanning(data, source, target, 
+        auto path = execRestrictedRoutePlanning(data, source, target, 
             avoidNodes, avoidEdges, node.first);
     }
 

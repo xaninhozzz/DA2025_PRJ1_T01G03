@@ -109,7 +109,6 @@ void Menu::drivingModeFunctions() {
     switch (choice) {
         case 1:
             execDriveMode();
-
         break;
         case 2:
             execRestrictedMode();
