@@ -5,6 +5,8 @@
 
 #include "RoutePlanner.h"
 
+#include <climits>
+
 RoutePlanner::RoutePlanner() {
 }
 
@@ -131,5 +133,97 @@ vector<int> RoutePlanner::execRestrictedRoutePlanning(Data data, int source, int
 
 
     return path1;
+
+}
+
+pair<vector<int>, int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int maxWalkTime) {
+    Graph<Location> g = data.get_graph();
+
+    // Reset all visited flags
+    for (auto v : g.getVertexSet()) {
+        v->setVisited(false);
+    }
+
+    std::unordered_map<int, Vertex<Location>*> parkingNodesMap;
+
+    for (auto &location : data.get_locations_by_id()) {
+        if (location.second->getParking()) {
+            parkingNodesMap[location.first] = location.second;
+        }
+    }
+
+    // Apply avoidNodes (if any)
+    for (int avoidNode : avoidNodes) {
+        auto v = data.get_locations_by_id()[avoidNode];
+        if (v) v->setVisited(true);
+    }
+
+    // Apply avoidEdges (if any)
+    for (auto avoidEdge : avoidEdges) {
+        auto src = data.get_locations_by_id()[avoidEdge.first];
+        auto dest = data.get_locations_by_id()[avoidEdge.second];
+        auto srcVertex = g.findVertex(src->getInfo());
+        auto destVertex = g.findVertex(dest->getInfo());
+
+        if (srcVertex && destVertex) {
+            for (auto e : srcVertex->getAdj()) {
+                if (e->getDest() == destVertex) {
+                    e->setSelected(true);
+                }
+            }
+        }
+    }
+
+    int bestTotalTime = INT_MAX;
+    int bestWalkingTime = -1;
+    std::vector<int> bestDrivingRoute;
+    std::vector<int> bestWalkingRoute;
+    int bestParkingNode = -1;
+
+    for (auto& parkingNodes : parkingNodesMap) {
+        int parkingNode = parkingNodes.first;
+
+        // Skip invalid parking nodes (e.g., source or destination, or nodes in avoid list)
+        if (parkingNode == source || parkingNode == target ||
+            std::find(avoidNodes.begin(), avoidNodes.end(), parkingNode) != avoidNodes.end()) {
+            continue;
+            }
+
+        // 1. Run Dijkstra (walking) from parkingNode to target
+        auto walkingRoute = dijkstra(g, parkingNode, target, data.get_locations_by_id(), false);
+
+        //3. Check conditions
+
+        //if (walkingTime == -1) continue;  // No valid walking route
+
+        // 3. Check if this route meets the walking time constraint
+        //if (walkingTime > maxWalkTime) continue;  // Skip if walking time exceeds the maximum limit
+
+        // 2. Run Dijkstra (driving) from source to parkingNode
+        auto drivingRoute = dijkstra(g, source, parkingNode, data.get_locations_by_id());
+
+        //if (drivingTime == -1) continue;  // No valid driving route
+
+
+
+        // 4. Calculate total time (driving + walking)
+        int totalTime = drivingTime + walkingTime;
+
+        // 5. If this route is better, update the best route
+        if (totalTime < bestTotalTime || (totalTime == bestTotalTime && walkingTime > bestWalkingTime)) {
+            bestTotalTime = totalTime;
+            bestWalkingTime = walkingTime;
+            bestDrivingRoute = drivingRoute;
+            bestWalkingRoute = walkingRoute;
+            bestParkingNode = parkingNode;
+        }
+    }
+
+
+
+
+
+
+
 
 }

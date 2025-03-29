@@ -114,6 +114,9 @@ void Menu::drivingModeFunctions() {
         case 2:
             execRestrictedMode();
             break;
+        case 3:
+            execEnvironmentallyFriendlyMode();
+            break;
         case 0:
             break;
         default:
@@ -229,6 +232,28 @@ void Menu::execRestrictedMode() {
     data.resetGraph();
 }
 
+void Menu::execEnvironmentallyFriendlyMode() {
+    auto source_dest = getSource_Destination();
+
+    int maxWalkTime = 0;
+    std::cout << "MaxWalkTime:";
+
+    cin >> maxWalkTime;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::vector<int> avoidNodes;
+    std::vector<std::pair<int, int>> avoidEdges;
+    int includeNode = -1;
+    //check if this is right
+
+    getAvoidData(avoidNodes, avoidEdges, includeNode);
+
+    auto result = routePlanner.execEnvironmentallyFriendlyRoutePlanning(data, source_dest.first, source_dest.second, avoidNodes, avoidEdges, maxWalkTime);
+
+    //fazer loop depois de parkingNode para ter maxWalkTime, ou seja, retornar parkingNode ou já maxWalkTime
+}
+
+
 pair<int,int> Menu::getSource_Destination() {
     int sourceId,destId;
 
@@ -269,13 +294,12 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
                         int& includeNode) {
     avoidNodes.clear();
     avoidEdges.clear();
-    includeNode = -1;
 
     std::string line;
 
     // Read AvoidNodes
     std::cout << "Enter AvoidNodes:<id>,<id>,... (or type 'none' to skip): ";
-    std::getline(std::cin, line);  // Read input
+    std::getline(std::cin, line);
     if (!line.empty()) {
         std::stringstream ss(line);
         std::string token;
@@ -289,7 +313,7 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
 
     // Read AvoidEdges
     std::cout << "Enter AvoidEdges:(id,id),(id,id),... (or type 'none' to skip): ";
-    std::getline(std::cin, line);  // Read input
+    std::getline(std::cin, line);
     if (!line.empty()) {
         std::stringstream ss(line);
         std::string segment;
@@ -312,14 +336,15 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
     }
 
     // Read IncludeNode
-    std::cout << "Enter IncludeNode:<id> (or type 'none' to skip): ";
-    std::getline(std::cin, line);  // Read input
-    if (!line.empty()) {
-        includeNode = std::stoi(line);  // Get the specific node to include
-    } else {
-        includeNode = -1;  // No specific node to include
-        std::cout << "No specific include node.\n";
-    }
+    if (includeNode != -1)
+        std::cout << "Enter IncludeNode:<id> (or type 'none' to skip): ";
+        std::getline(std::cin, line);  // Read input
+        if (!line.empty()) {
+            includeNode = std::stoi(line);  // Get the specific node to include
+        } else {
+            includeNode = -1;  // No specific node to include
+            std::cout << "No specific include node.\n";
+        }
 }
 
 

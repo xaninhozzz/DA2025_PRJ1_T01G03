@@ -20,6 +20,7 @@ class Menu {
 
     void execDriveMode();
     void execRestrictedMode();
+    void execEnvironmentallyFriendlyMode();
     RoutePlanner routePlanner;
 };
 
