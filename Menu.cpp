@@ -154,10 +154,12 @@ void Menu::execDriveMode() {
         }
     }
 
-    if (pair.first.empty()) {
-        cout << "No valid path" << endl;
+    if (pair.first.size() <= 1) {       //REVER -> empty não funcionava no alternative
+        cout << "none" << endl;
         return;
     }
+
+    cout << "BestDrivingRoute:";
     for (int i = 0; i < pair.first.size(); i++) {
         cout << pair.first[i];
         if (i != pair.first.size() - 1) {
@@ -167,9 +169,9 @@ void Menu::execDriveMode() {
             std::cout << "(" << total << ")\n";
         }
     }
-    cout << endl;
-    if (pair.second.size() == 0) {
-        cout << "No valid planB" << endl;
+    cout << "AlternativeDrivingRoute:";
+    if (pair.second.size() <= 1) {
+        cout << "none" << endl;
         return;
     }
     for (int i = 0; i < pair.second.size(); i++) {
@@ -230,9 +232,8 @@ void Menu::execRestrictedMode() {
 pair<int,int> Menu::getSource_Destination() {
     int sourceId,destId;
 
-    std::cout << "Source Id" << std::endl;
+    std::cout << "Source:";
 
-    std::cout << "Enter your choice: ";
     std::cin >> sourceId;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -243,9 +244,8 @@ pair<int,int> Menu::getSource_Destination() {
         getSource_Destination();
     }
 
-    std::cout << "Destination Id" << std::endl;
+    std::cout << "Destination:";
 
-    std::cout << "Enter your choice: ";
     std::cin >> destId;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -276,7 +276,7 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
     // Read AvoidNodes
     std::cout << "Enter AvoidNodes:<id>,<id>,... (or type 'none' to skip): ";
     std::getline(std::cin, line);  // Read input
-    if (line != "none" && !line.empty()) {
+    if (!line.empty()) {
         std::stringstream ss(line);
         std::string token;
         while (std::getline(ss, token, ',')) {
@@ -290,7 +290,7 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
     // Read AvoidEdges
     std::cout << "Enter AvoidEdges:(id,id),(id,id),... (or type 'none' to skip): ";
     std::getline(std::cin, line);  // Read input
-    if (line != "none" && !line.empty()) {
+    if (!line.empty()) {
         std::stringstream ss(line);
         std::string segment;
         while (std::getline(ss, segment, ')')) {
@@ -314,7 +314,7 @@ void Menu::getAvoidData(std::vector<int>& avoidNodes,
     // Read IncludeNode
     std::cout << "Enter IncludeNode:<id> (or type 'none' to skip): ";
     std::getline(std::cin, line);  // Read input
-    if (line != "none" && !line.empty()) {
+    if (!line.empty()) {
         includeNode = std::stoi(line);  // Get the specific node to include
     } else {
         includeNode = -1;  // No specific node to include
