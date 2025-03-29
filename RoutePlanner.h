@@ -23,6 +23,7 @@ class RoutePlanner {
         pair<vector<int>,vector<int>> execIndependentRoutePlanning(Data data,int source, int target);
         vector<int> execRestrictedRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int includeNode);
         pair<vector<int>, int> execEnvironmentallyFriendlyRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int maxWalkTime);
+        unordered_map<int, Vertex<Location>*> findFirstParking(Data data, Graph<Location> g, int vertexID, unordered_map<int, Vertex<Location>*> parkingNodesMap);
 };
 
 

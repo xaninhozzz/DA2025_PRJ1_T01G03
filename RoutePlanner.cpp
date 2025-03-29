@@ -137,64 +137,28 @@ vector<int> RoutePlanner::execRestrictedRoutePlanning(Data data, int source, int
 
 }
 
-int RoutePlanner::dijkstraFriendly(Graph<Location> g, int sourceId, int targetId, std::unordered_map<int, Vertex<Location> *> locations, bool isDriving=true) {
+unordered_map<int, Vertex<Location>*> RoutePlanner::findFirstParking(Data data, Graph<Location> g, int vertexID, unordered_map<int, Vertex<Location>*> parkingNodesMap) {
+    // Vector to store reachable parking nodes from the source (vertexID)
+    unordered_map<int, Vertex<Location>*> reachableParkingNodes;
 
-    const int inf = std::numeric_limits<int>::max();
+    // Step 1: Run Dijkstra to find the first reachable parking nodes from the source
+    auto parkingFromSource = dijkstra(g, vertexID, -1, data.get_locations_by_id(), true);
 
-    std::unordered_map<int, int> dist;
-    std::unordered_map<int, int> prev;
-
-    for (auto v : g.getVertexSet()) {
-        dist[v->getInfo().getId()] = inf;
-        prev[v->getInfo().getId()] = -1;
-        v->setDist(INF);
-    }
-
-    Vertex<Location> * src = locations[sourceId];
-    if (!src) return {};
-    src->setDist(0);
-
-    MutablePriorityQueue<Vertex<Location>> pq;
-    pq.insert(src);
-
-    while (!pq.empty()) {
-        auto u = pq.extractMin();
-
-        for (auto e : u->getAdj()) {
-            if (!e->isSelected()) {
-                int w = e->getWeight(isDriving);
-                //cout << w << endl;
-                if (w == -1) continue; // skip inaccessible edges
-
-                Vertex<Location>* v = e->getDest();
-                int alt = u->getDist() + w;
-
-                if (alt < v->getDist() && !v->isVisited()) {
-                    v->setDist(alt);
-                    prev[v->getInfo().getId()] = u->getInfo().getId();
-
-                    pq.insert(v);
-                }
-            }
+    for (auto &node : parkingNodesMap) {
+        // Check if the parking node is in the shortest path
+        if (find(parkingFromSource.begin(), parkingFromSource.end(), node.first) != parkingFromSource.end()) {
+            reachableParkingNodes[node.first] = node.second;  // Insert into map (node.first = parking node id, node.second = vertex)
         }
     }
 
-    std::vector<int> path;
-    Vertex<Location>* end = locations[targetId];
-    if (!end || end->getDist() == inf) return path; // no path found
-
-    for (int at = targetId; at != -1; at = prev[at]) {
-        path.push_back(at);
-    }
-
-    std::reverse(path.begin(), path.end());
-    return path;
+    // Step 2: Now that we have the reachable parking nodes, return the first one(s)
+    return reachableParkingNodes;
 }
 
 
 pair<vector<int>, int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Data data, int source, int target, const std::vector<int>& avoidNodes, const std::vector<std::pair<int, int>>& avoidEdges, int maxWalkTime) {
     Graph<Location> g = data.get_graph();
-
+    pair<vector<int>, int> p;
    //criar dois sets um dos parkings possiveis atraves do source e outro dos destinations 
 
     // Reset all visited flags
@@ -210,83 +174,21 @@ pair<vector<int>, int> RoutePlanner::execEnvironmentallyFriendlyRoutePlanning(Da
         }
     }
 
-    // Apply avoidNodes (if any)
-    for (int avoidNode : avoidNodes) {
-        auto v = data.get_locations_by_id()[avoidNode];
-        if (v) v->setVisited(true);
-    }
+    unordered_map<int, Vertex<Location>*> sourceParkingNodes = findFirstParking(data, g, source, parkingNodesMap);
+    unordered_map<int, Vertex<Location>*> targetParkingNodes = findFirstParking(data, g, target, parkingNodesMap);
 
-    // Apply avoidEdges (if any)
-    for (auto avoidEdge : avoidEdges) {
-        auto src = data.get_locations_by_id()[avoidEdge.first];
-        auto dest = data.get_locations_by_id()[avoidEdge.second];
-        auto srcVertex = g.findVertex(src->getInfo());
-        auto destVertex = g.findVertex(dest->getInfo());
-
-        if (srcVertex && destVertex) {
-            for (auto e : srcVertex->getAdj()) {
-                if (e->getDest() == destVertex) {
-                    e->setSelected(true);
-                }
-            }
+    // Step 3: Find the intersection of parking nodes from the source and target
+    unordered_map<int, Vertex<Location>*> commonParkingNodes;
+    for (auto &node : sourceParkingNodes) {
+        // If the node is also in the targetParkingNodes map, add it to commonParkingNodes
+        if (targetParkingNodes.find(node.first) != targetParkingNodes.end()) {
+            commonParkingNodes[node.first] = node.second;
         }
     }
-
-    findFirstParking(data, g, target, parkingNodesMap);
-    findFirstParking(data, g, source, parkingNodesMap);
-
-    // int bestTotalTime = INT_MAX;
-    // int bestWalkingTime = -1;
-    // std::vector<int> bestDrivingRoute;
-    // std::vector<int> bestWalkingRoute;
-    // int bestParkingNode = -1;
-
-    // for (auto& parkingNodes : parkingNodesMap) {
-    //     int parkingNode = parkingNodes.first;
-
-    //     // Skip invalid parking nodes (e.g., source or destination, or nodes in avoid list)
-    //     if (parkingNode == source || parkingNode == target ||
-    //         std::find(avoidNodes.begin(), avoidNodes.end(), parkingNode) != avoidNodes.end()) {
-    //         continue;
-    //         }
-
-    //     // 1. Run Dijkstra (walking) from parkingNode to target
-    //     auto walkingRoute = dijkstra(g, parkingNode, target, data.get_locations_by_id(), false);
-
-    //     //3. Check conditions
-
-    //     //if (walkingTime == -1) continue;  // No valid walking route
-
-    //     // 3. Check if this route meets the walking time constraint
-    //     //if (walkingTime > maxWalkTime) continue;  // Skip if walking time exceeds the maximum limit
-
-    //     // 2. Run Dijkstra (driving) from source to parkingNode
-    //     auto drivingRoute = dijkstra(g, source, parkingNode, data.get_locations_by_id());
-
-    //     //if (drivingTime == -1) continue;  // No valid driving route
-
-
-
-        // // 4. Calculate total time (driving + walking)
-        // int totalTime = drivingTime + walkingTime;
-
-        // // 5. If this route is better, update the best route
-        // if (totalTime < bestTotalTime || (totalTime == bestTotalTime && walkingTime > bestWalkingTime)) {
-        //     bestTotalTime = totalTime;
-        //     bestWalkingTime = walkingTime;
-        //     bestDrivingRoute = drivingRoute;
-        //     bestWalkingRoute = walkingRoute;
-        //     bestParkingNode = parkingNode;
-        //}
-
-}
-
-
-vector<int> findFirstParking(Data data, Graph<Location> g, int vertexID, unordered_map<int, Vertex<Location>*> parkingNodesMap){
-    vector<int> v();
-    for (auto &parking: parkingNodesMap){
-        v.push_back(dijkstraFriendly(g, vertexID, parking, data.get_locations_by_id()));
-        
+    
+    for (auto &node : commonParkingNodes){
+        execRestrictedRoutePlanning(data, source, target, 
+            avoidNodes, avoidEdges, node.first);
     }
 
 }
